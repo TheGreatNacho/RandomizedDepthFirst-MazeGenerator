@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
@@ -7,6 +8,20 @@ using System.IO;
 
 namespace MazeGenerator
 {
+    // Babies first intro to structs: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/struct
+    public struct Vector2
+    {
+        public Vector2(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public int X { get; }
+        public int Y { get; }
+
+        public override string ToString() => $"({X}, {Y})";
+    }
     class Maze
     {
         /*
@@ -22,12 +37,27 @@ namespace MazeGenerator
          *  8. Up
          */
         private byte[,] mazeData;
-        private int[] stack;
-        private int stackSize = 0;
+        // AWW YEAH BABY REALL STACK INTERGRATION WOOOOO!
+        private Stack stack = new Stack();
 
         public int mazeWidth;
         public int mazeHeight;
         public Maze(int width, int height, int startX, int startY)
+        {
+            generateMaze(width, height, startX, startY, noCallback, noCallback, noCallback, noCallback);
+        }
+
+        public Maze(int width, int height, int startX, int startY, Func<double> rightBiasFunction, Func<double> downBiasFunction, Func<double> leftBiasFunction, Func<double> upBiasFunction)
+        {
+            generateMaze(width, height, startX, startY, rightBiasFunction, downBiasFunction, leftBiasFunction, upBiasFunction);
+        }
+
+        private double noCallback()
+        {
+            return 1.0;
+        }
+
+        private void generateMaze(int width, int height, int startX, int startY, Func<double> rightBiasFunction, Func<double> downBiasFunction, Func<double> leftBiasFunction, Func<double> upBiasFunction)
         {
             // Get the time so we can see how fast this is
             DateTime start = DateTime.Now;
@@ -38,19 +68,17 @@ namespace MazeGenerator
             // Set the width and height on the class object
             this.mazeWidth = width;
             this.mazeHeight = height;
-            // The longest stack possible
-            int stackMax = width * height;
             // Create the new stack
-            this.stack = new int[stackMax];
 
             // Append the startX and startY onto the stack.
             this.addToStack(startX, startY);
 
-            while (this.stackSize > 0)
+            while (this.stack.Count > 0)
             {
                 // Using the last item on the stack:
-                int x = (this.stack[stackSize - 1] / width);
-                int y = (this.stack[stackSize - 1] % width);
+                Vector2 cell = (Vector2)this.stack.Peek();
+                int x = cell.X;
+                int y = cell.Y;
 
 
                 // Pick a valid direction
@@ -150,13 +178,13 @@ namespace MazeGenerator
         // X and Y positions are 0 based
         private void addToStack(int x, int y)
         {
+            Vector2 vec2 = new Vector2(x, y);
             // Stack values are stored as x*width+y
-            this.stack[stackSize] = x * this.mazeWidth + y;
-            this.stackSize += 1;
+            this.stack.Push(vec2);
         }
         private void removeFromStack()
         {
-            this.stackSize -= 1;
+            this.stack.Pop();
         }
 
         // Returns the byte value of the maze cell from the X,Y Coorodinate
