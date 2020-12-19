@@ -8,9 +8,9 @@ namespace MazeGenerator
     {
         static void Main(string[] args)
         {
-            Maze maze = new Maze(10, 15, 5, 5);
+            Maze maze = new Maze(10000, 10000, 5, 5);
             //maze.previewMaze();
-            maze.outputMaze("test.png", 100, 100);
+            maze.Output("test.png", 3, 3);
 
         }
     }

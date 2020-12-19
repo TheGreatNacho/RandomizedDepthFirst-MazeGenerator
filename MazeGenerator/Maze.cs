@@ -44,20 +44,20 @@ namespace MazeGenerator
         public int mazeHeight;
         public Maze(int width, int height, int startX, int startY)
         {
-            generateMaze(width, height, startX, startY, noCallback, noCallback, noCallback, noCallback);
+            GenerateMaze(width, height, startX, startY, NoCallback, NoCallback, NoCallback, NoCallback);
         }
 
         public Maze(int width, int height, int startX, int startY, Func<double> rightBiasFunction, Func<double> downBiasFunction, Func<double> leftBiasFunction, Func<double> upBiasFunction)
         {
-            generateMaze(width, height, startX, startY, rightBiasFunction, downBiasFunction, leftBiasFunction, upBiasFunction);
+            GenerateMaze(width, height, startX, startY, rightBiasFunction, downBiasFunction, leftBiasFunction, upBiasFunction);
         }
 
-        private double noCallback()
+        private double NoCallback()
         {
             return 1.0;
         }
 
-        private void generateMaze(int width, int height, int startX, int startY, Func<double> rightBiasFunction, Func<double> downBiasFunction, Func<double> leftBiasFunction, Func<double> upBiasFunction)
+        private void GenerateMaze(int width, int height, int startX, int startY, Func<double> rightBiasFunction, Func<double> downBiasFunction, Func<double> leftBiasFunction, Func<double> upBiasFunction)
         {
             // Get the time so we can see how fast this is
             DateTime start = DateTime.Now;
@@ -71,7 +71,7 @@ namespace MazeGenerator
             // Create the new stack
 
             // Append the startX and startY onto the stack.
-            this.addToStack(startX, startY);
+            this.AddToStack(startX, startY);
 
             while (this.stack.Count > 0)
             {
@@ -85,51 +85,51 @@ namespace MazeGenerator
                 // the byteMask contains the list of valid directions
                 byte byteMask = 0;
                 // Bit Right = 1
-                byteMask |= (byte)(this.pointIsEmpty(x + 1, y) * 1);
+                byteMask |= (byte)(this.PointIsEmpty(x + 1, y) * 1);
                 // Bit Down = 2
-                byteMask |= (byte)(this.pointIsEmpty(x, y + 1) * 2);
+                byteMask |= (byte)(this.PointIsEmpty(x, y + 1) * 2);
                 // Bit Left = 4
-                byteMask |= (byte)(this.pointIsEmpty(x - 1, y) * 4);
+                byteMask |= (byte)(this.PointIsEmpty(x - 1, y) * 4);
                 // Bit Up = 8
-                byteMask |= (byte)(this.pointIsEmpty(x, y - 1) * 8);
+                byteMask |= (byte)(this.PointIsEmpty(x, y - 1) * 8);
 
 
 
                 if (byteMask > 0)
                 {
                     // Pick a random direction
-                    byte chosenDir = this.randomDirection(byteMask);
+                    byte chosenDir = this.RandomDirection(byteMask);
                     switch (chosenDir)
                     {
 
                         // Add an opening between the two cells
                         // Add the new location to the stack
                         case 1: // Right
-                            this.exitPoint(x, y, (byte)chosenDir);
-                            this.enterPoint(x + 1, y, (byte)chosenDir);
-                            this.addToStack(x + 1, y);
+                            this.ExitPoint(x, y, (byte)chosenDir);
+                            this.EnterPoint(x + 1, y, (byte)chosenDir);
+                            this.AddToStack(x + 1, y);
                             break;
                         case 2: // Down
-                            this.exitPoint(x, y, (byte)chosenDir);
-                            this.enterPoint(x, y + 1, (byte)chosenDir);
-                            this.addToStack(x, y + 1);
+                            this.ExitPoint(x, y, (byte)chosenDir);
+                            this.EnterPoint(x, y + 1, (byte)chosenDir);
+                            this.AddToStack(x, y + 1);
                             break;
                         case 4: // Left
-                            this.exitPoint(x, y, (byte)chosenDir);
-                            this.enterPoint(x - 1, y, (byte)chosenDir);
-                            this.addToStack(x - 1, y);
+                            this.ExitPoint(x, y, (byte)chosenDir);
+                            this.EnterPoint(x - 1, y, (byte)chosenDir);
+                            this.AddToStack(x - 1, y);
                             break;
                         case 8: // Up
-                            this.exitPoint(x, y, (byte)chosenDir);
-                            this.enterPoint(x, y - 1, (byte)chosenDir);
-                            this.addToStack(x, y - 1);
+                            this.ExitPoint(x, y, (byte)chosenDir);
+                            this.EnterPoint(x, y - 1, (byte)chosenDir);
+                            this.AddToStack(x, y - 1);
                             break;
                     }
                 }
                 else
                 // If no valid direction is available, remove this cell from the stack
                 {
-                    this.removeFromStack();
+                    this.RemoveFromStack();
                 }
 
 
@@ -143,7 +143,7 @@ namespace MazeGenerator
 
         }
 
-        private byte randomDirection(byte byteMask)
+        private byte RandomDirection(byte byteMask)
         {
             // Initiate a random instance
             Random rand = new Random();
@@ -176,19 +176,19 @@ namespace MazeGenerator
 
         // Add the X Y coordinate to the stack.
         // X and Y positions are 0 based
-        private void addToStack(int x, int y)
+        private void AddToStack(int x, int y)
         {
             Vector2 vec2 = new Vector2(x, y);
             // Stack values are stored as x*width+y
             this.stack.Push(vec2);
         }
-        private void removeFromStack()
+        private void RemoveFromStack()
         {
             this.stack.Pop();
         }
 
         // Returns the byte value of the maze cell from the X,Y Coorodinate
-        public byte getPoint(int x, int y)
+        public byte GetPoint(int x, int y)
         {
             // If the position is out of bounds, return 0
             if (x >= this.mazeWidth || x < 0 || y > mazeHeight || y < 0) { return 0; }
@@ -198,34 +198,34 @@ namespace MazeGenerator
         // Determines whether or not there is data in the point provided.
         // 1 = the point is empty
         // 0 = the point is not empty
-        public int pointIsEmpty(int x, int y)
+        public int PointIsEmpty(int x, int y)
         {
             // If the position is out of bounds, return 0
             if (x >= this.mazeWidth || x < 0 || y >= mazeHeight || y < 0) { return 0; }
             // If the position contains data, return 0
-            if (this.getPoint(x, y) > 0) { return 0; }
+            if (this.GetPoint(x, y) > 0) { return 0; }
             return 1;
         }
 
         // Entering the cell requires the value be flipped. Left=right, up=down, etc.
-        private void enterPoint(int x, int y, byte value)
+        private void EnterPoint(int x, int y, byte value)
         {
             byte flipValue = (byte)(((value << 4) | value) >> 2 & 15);
             this.mazeData[x, y] |= flipValue;
 
         }
         // Exiting a cell sets the value of that cell to include the value provided
-        private void exitPoint(int x, int y, byte value)
+        private void ExitPoint(int x, int y, byte value)
         {
             this.mazeData[x, y] |= value;
         }
-        public void previewMaze()
+        public void PreviewMaze()
         {
             for (int y = 0; y < this.mazeHeight; y++)
             {
                 for (int x = 0; x < this.mazeWidth; x++)
                 {
-                    switch (this.getPoint(x, y))
+                    switch (this.GetPoint(x, y))
                     {
                         default:
                             Console.Write('█');
@@ -280,14 +280,14 @@ namespace MazeGenerator
                 Console.Write("\n");
             }
         }
-        public void previewMazeInts()
+        public void PreviewMazeInts()
         {
             for (int y = 0; y < this.mazeHeight; y++)
             {
                 for (int x = 0; x < this.mazeWidth; x++)
                 {
-                    string val = " ";
-                    int point = this.getPoint(x, y);
+                    string val;
+                    int point = this.GetPoint(x, y);
                     if (point < 10)
                     {
                         val = point.ToString();
@@ -302,7 +302,7 @@ namespace MazeGenerator
                 Console.Write("\n");
             }
         }
-        public void outputMaze(string location, int hallWidth, int hallHeight)
+        public void Output(string location, int hallWidth, int hallHeight)
         {
 
             DateTime start = DateTime.Now;
@@ -329,7 +329,7 @@ namespace MazeGenerator
                     bm.SetPixel((x * (hallWidth + 2)) + ((hallWidth + 2) - 1), (y * (hallHeight + 2)), wall);
                     bm.SetPixel((x * (hallWidth + 2)), (y * (hallHeight + 2)) + ((hallHeight + 2) - 1), wall);
                     bm.SetPixel((x * (hallWidth + 2)) + ((hallWidth + 2) - 1), (y * (hallHeight + 2)) + ((hallHeight + 2) - 1), wall);
-                    byte point = this.getPoint(x, y);
+                    byte point = this.GetPoint(x, y);
                     if ((point & 1) == 0) // Right
                     {
                         for (var i = 1; i <= hallHeight; i++)
@@ -382,7 +382,7 @@ namespace MazeGenerator
 
             return Math.Sqrt(a * a + b * b);
         }
-        public byte pickBestLocation(int nodex, int nodey, int gCost, int endx, int endy)
+        public byte PickBestLocation(int nodex, int nodey, int gCost, int endx, int endy)
         {
             PointF nodePoint = new PointF(nodex, nodey);
             PointF nodeEnd = new PointF(endx, endy);
